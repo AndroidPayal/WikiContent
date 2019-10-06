@@ -103,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
         final String[] topCategory ={"Education" , "Health" , "Crime"} ;
         count = 0;
 
-        for (int i=0; i<topCategory.length ; i++){
+        for ( int i=0; i<topCategory.length ; i++){
+            categoryArray.add(new CategoryData(""+i , topCategory[i]));
             /*url to get pages of particular category*/
             String url = "https://en.wikipedia.org/w/api.php?format=json&action=query&list=categorymembers&cmtitle=Category:"+topCategory[i]+"&cmsort=timestamp&cmdir=desc&cmlimit=5";
 
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                     parseData(response);
                     Log.d(TAG, "onResponse: count  = "+count);
 
-                  //  if (count == topCategory.length)
+                    if (count == topCategory.length)
                         mainCategoryAdapter.notifyDataSetChanged();
                 }
             }, new Response.ErrorListener() {

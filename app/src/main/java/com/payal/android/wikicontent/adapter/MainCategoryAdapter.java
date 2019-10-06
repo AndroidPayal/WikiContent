@@ -44,20 +44,18 @@ public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapte
     public void onBindViewHolder(MainCategoryAdapter.ViewHolder holder, int position) {
         holder.categoryTitle.setText(listItems.get(position).getTitle());
 
-        MainSubcategoryAdapter adapter = new MainSubcategoryAdapter(context,modelDataArray.get(position));
+        if (modelDataArray.size()!=0) {
+            MainSubcategoryAdapter adapter = new MainSubcategoryAdapter(context, modelDataArray.get(position));
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayout.HORIZONTAL,false);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayout.HORIZONTAL, false);
 
-        holder.subCategoryRecyclerView.setHasFixedSize(true);
+            holder.subCategoryRecyclerView.setHasFixedSize(true);
 
-        holder.subCategoryRecyclerView.setLayoutManager(layoutManager);
+            holder.subCategoryRecyclerView.setLayoutManager(layoutManager);
 
-        holder.subCategoryRecyclerView.setAdapter(adapter);
+            holder.subCategoryRecyclerView.setAdapter(adapter);
 
-
-//        holder.name.setText(item.getName());
-//        holder.description.setText(item.getDescription());
-//        holder.rating.setText(item.getRating());
+        }
     }
 
     @Override
