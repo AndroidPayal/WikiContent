@@ -44,14 +44,6 @@ public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapte
     public void onBindViewHolder(MainCategoryAdapter.ViewHolder holder, int position) {
         holder.categoryTitle.setText(listItems.get(position).getTitle());
 
-        //dummy te
-       ArrayList array1 = new ArrayList<>();
-        //adding dummy data for testing
-        array1.add(new MainSubCategoryData("id1","title1","imageurl"));
-        array1.add(new MainSubCategoryData("id2","title2","imageurl"));
-        array1.add(new MainSubCategoryData("id3","title3","imageurl"));
-
-        modelDataArray.add(array1);
         MainSubcategoryAdapter adapter = new MainSubcategoryAdapter(context,modelDataArray.get(position));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayout.HORIZONTAL,false);

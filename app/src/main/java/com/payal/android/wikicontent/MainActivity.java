@@ -11,12 +11,23 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.payal.android.wikicontent.adapter.MainCategoryAdapter;
 import com.payal.android.wikicontent.datas.CategoryData;
 import com.payal.android.wikicontent.datas.MainSubCategoryData;
 import com.payal.android.wikicontent.sharedPref.InitApplication;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -29,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView;
 
-    ArrayList<ArrayList> subcategoryList;
-    ArrayList<CategoryData> categoryArray;
+    ArrayList<ArrayList> subcategoryList= new ArrayList<>();
+    ArrayList<CategoryData> categoryArray =  new ArrayList<>();
     ArrayList<MainSubCategoryData> subcategoryArrays;
-
-
+    MainCategoryAdapter mainCategoryAdapter;
+    public static int count =0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,53 +79,96 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        categoryArray = new ArrayList<>();
-        subcategoryList = new ArrayList<>();
 
         recyclerView = findViewById(R.id.base_recycler);
+        //categoryArray.clear();subcategoryList.clear();
+       // fetchArticleFromApi();
 
-        fetchArticleFromApi();
-
-        MainCategoryAdapter mainCategoryAdapter = new MainCategoryAdapter(getApplicationContext(),categoryArray,subcategoryList);
+        mainCategoryAdapter = new MainCategoryAdapter(getApplicationContext(),categoryArray,subcategoryList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setAutoMeasureEnabled(true);
-
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setFocusable(false);
-
         recyclerView.setHasFixedSize(false);
-
         recyclerView.setAdapter(mainCategoryAdapter);
 
+        fetchArticleFromApi();
+        //fetchDummyData();
 
     }
 
     public void fetchArticleFromApi(){
-/*https://en.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0&prop=revisions%7Cimages&rvprop=content&grnlimit=10
-* */
-        //TODO : here we need to fetch data from api and add in two arrays
+        /*adding this three categories as top category*/
+        final String[] topCategory ={"Education" , "Health" , "Crime"} ;
+        count = 0;
 
-        subcategoryArrays = new ArrayList<>();
-        //adding dummy data for testing
-        subcategoryArrays.add(new MainSubCategoryData("id1","title1","imageurl"));
-        subcategoryArrays.add(new MainSubCategoryData("id2","title2","imageurl"));
-        subcategoryArrays.add(new MainSubCategoryData("id3","title3","imageurl"));
+        for (int i=0; i<topCategory.length ; i++){
+            /*url to get pages of particular category*/
+            String url = "https://en.wikipedia.org/w/api.php?format=json&action=query&list=categorymembers&cmtitle=Category:"+topCategory[i]+"&cmsort=timestamp&cmdir=desc&cmlimit=5";
 
-        subcategoryList.add(subcategoryArrays);//products belong to one category
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+            StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(TAG, "onResponse() returned: " + response);
+                    count++;
+                    parseData(response);
+                    Log.d(TAG, "onResponse: count  = "+count);
 
-        CategoryData categoryData = new CategoryData("id1","CategoryName1");
-        categoryArray.add(categoryData);//vertical list having all article list
-        categoryData = new CategoryData("id2","CategoryName2");
-        categoryArray.add(categoryData);categoryData = new CategoryData("id3","CategoryName3");
-        categoryArray.add(categoryData); categoryArray.add(categoryData);categoryData = new CategoryData("id3","CategoryName3");
-        categoryArray.add(categoryData); categoryArray.add(categoryData);categoryData = new CategoryData("id3","CategoryName3");
-        categoryArray.add(categoryData); categoryArray.add(categoryData);categoryData = new CategoryData("id3","CategoryName3");
-        categoryArray.add(categoryData);
-
-
+                  //  if (count == topCategory.length)
+                        mainCategoryAdapter.notifyDataSetChanged();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(TAG, "onErrorResponse: ",error );
+                }
+            });
+            requestQueue.add(request);
+        }
     }
 
+    private void parseData(String response) {
+        try{
+                JSONObject responseObject = new JSONObject(response);
+                responseObject = responseObject.getJSONObject("query");
+                JSONArray queryArray = responseObject.getJSONArray("categorymembers");
+                subcategoryArrays = new ArrayList<>();
+                String title;
+                for (int i = 0; i< queryArray.length() ; i++){
+                    title =queryArray.getJSONObject(i).get("title").toString();
+                    subcategoryArrays.add(new MainSubCategoryData((i+1)+"" , title , ""));
+                }
+                subcategoryList.add(subcategoryArrays);
 
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public void fetchDummyData(){
+
+    subcategoryArrays = new ArrayList<>();
+    //adding dummy data for testing
+    subcategoryArrays.add(new MainSubCategoryData("id1","title1","imageurl"));
+    subcategoryArrays.add(new MainSubCategoryData("id2","title2","imageurl"));
+    subcategoryArrays.add(new MainSubCategoryData("id3","title3","imageurl"));
+
+    subcategoryList.add(subcategoryArrays);//products belong to one category
+    subcategoryList.add(subcategoryArrays);
+    subcategoryList.add(subcategoryArrays);
+    subcategoryList.add(subcategoryArrays);
+    subcategoryList.add(subcategoryArrays);
+    subcategoryList.add(subcategoryArrays);
+
+    categoryArray.add(new CategoryData("id1","CategoryName1"));//vertical list having all article list
+    categoryArray.add(new CategoryData("id2","CategoryName2"));
+    categoryArray.add(new CategoryData("id3","CategoryName3"));
+    categoryArray.add(new CategoryData("id3","CategoryName3"));
+    categoryArray.add(new CategoryData("id3","CategoryName3"));
+    categoryArray.add(new CategoryData("id3","CategoryName3"));
+
+    mainCategoryAdapter.notifyDataSetChanged();
+
+}
 
 }
