@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapter.ViewHolder> {
 
-
+    public String TAG = "Tag_MainCategoryAdapter";
     private Context context;
     private ArrayList<CategoryData> listItems;
     private ArrayList<ArrayList> modelDataArray;
@@ -45,16 +45,12 @@ public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapte
         holder.categoryTitle.setText(listItems.get(position).getTitle());
 
         if (modelDataArray.size()!=0) {
+            Log.d(TAG, "onBindViewHolder:size= "+modelDataArray.size());
             MainSubcategoryAdapter adapter = new MainSubcategoryAdapter(context, modelDataArray.get(position));
-
             LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayout.HORIZONTAL, false);
-
             holder.subCategoryRecyclerView.setHasFixedSize(true);
-
             holder.subCategoryRecyclerView.setLayoutManager(layoutManager);
-
             holder.subCategoryRecyclerView.setAdapter(adapter);
-
         }
     }
 

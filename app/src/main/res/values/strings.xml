@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">WikiContent</string>
-    <string name="action_theme_setting">Setting</string>
+    <string name="action_theme_setting">Change Theme</string>
     <string name="Open">Open</string>
     <string name="Close">Close</string>
 </resources>

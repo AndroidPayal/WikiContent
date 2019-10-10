@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class MainSubcategoryAdapter extends RecyclerView.Adapter<MainSubcategoryAdapter.ViewHolder> {
 
-
+    public String TAG = "Tag_MainSubcategoryAdapter";
     private Context context;
 //    private List<ListItemQuote> listItems;
     private ArrayList<MainSubCategoryData> listItems;
@@ -42,6 +42,10 @@ public class MainSubcategoryAdapter extends RecyclerView.Adapter<MainSubcategory
     @Override
     public void onBindViewHolder(MainSubcategoryAdapter.ViewHolder holder, int position) {
         // TODO : bind data values with view here
+        //Log.d(TAG, "onBindViewHolder: subcategory = "+listItems.get(position).getSubCategoryTitle());
+        holder.subCategoryTitle.setText(listItems.get(position).getSubCategoryTitle());
+        holder.subCategoryImage.setImageResource(R.drawable.wikilogo);
+
     }
 
     @Override
